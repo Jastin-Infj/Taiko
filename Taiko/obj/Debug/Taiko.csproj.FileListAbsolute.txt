@@ -1,7 +1,6 @@
 C:\Users\game\Desktop\Taiko\Taiko\bin\Debug\Taiko.exe.config
 C:\Users\game\Desktop\Taiko\Taiko\bin\Debug\Taiko.exe
 C:\Users\game\Desktop\Taiko\Taiko\bin\Debug\Taiko.pdb
-C:\Users\game\Desktop\Taiko\Taiko\obj\Debug\Taiko.csprojAssemblyReference.cache
 C:\Users\game\Desktop\Taiko\Taiko\obj\Debug\Taiko.太鼓スコアシミュレータ.resources
 C:\Users\game\Desktop\Taiko\Taiko\obj\Debug\Taiko.Properties.Resources.resources
 C:\Users\game\Desktop\Taiko\Taiko\obj\Debug\Taiko.csproj.GenerateResource.cache
@@ -17,3 +16,4 @@ C:\Users\takum\Desktop\Taiko\Taiko\obj\Debug\Taiko.csproj.GenerateResource.cache
 C:\Users\takum\Desktop\Taiko\Taiko\obj\Debug\Taiko.csproj.CoreCompileInputs.cache
 C:\Users\takum\Desktop\Taiko\Taiko\obj\Debug\Taiko.exe
 C:\Users\takum\Desktop\Taiko\Taiko\obj\Debug\Taiko.pdb
+C:\Users\game\Desktop\Taiko\Taiko\obj\Debug\Taiko.csprojResolveAssemblyReference.cache

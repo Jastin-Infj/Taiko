@@ -15,7 +15,12 @@ namespace Taiko
     {
         private bool fileNameflag;
         //読み込んだ専用ファイル
-        private List<string> lines = new List<string>();
+        private List<string> fumen_全体 = new List<string>();
+        //コースごとの読み込み文字列
+        private List<string> fumen_鬼 = new List<string>();
+        private List<string> fumen_難 = new List<string>();
+        private List<string> fumen_普 = new List<string>();
+        private List<string> fumen_簡 = new List<string>();
 
 
         public 太鼓スコアシミュレータ()
@@ -35,7 +40,7 @@ namespace Taiko
             //ファイル名の指定をする
             openFileDialog.FileName = "*.tja";
             //初めに開く時のファイルパスを選択する
-            openFileDialog.InitialDirectory = "C:/Users/takum/Documents/";
+            openFileDialog.InitialDirectory = "C:/Users/Documents/";
             //ファイル名の種類(読み込み可能ファイルを選択)
             openFileDialog.Filter = "TJAファイル(*.tja)|*.tja";
 
@@ -71,7 +76,13 @@ namespace Taiko
             {
                 return;
             }
+            //不正チェック用に文字列を代入させる
             this.TJAplayer3テキスト読み込み();
+            if (!this.TJAplayer3テキスト不正チェック())
+            {
+                return;
+            }
+            this.Text = "OK";
         }
 
         private void TJAplayer3テキスト読み込み()
@@ -83,24 +94,34 @@ namespace Taiko
             {
                 //ファイルを1行ずつ読み込み
                 string stBuffer = sr.ReadLine();
-                this.lines.Add(stBuffer);
+                this.fumen_全体.Add(stBuffer);
             }
             sr.Close();
         }
 
         private bool TJAplayer3テキスト不正チェック()
         {
-            //タイトルがない
+            //チェックする要素
+            //左から読み込む必要がある
+            string[] search_要素 = { "COURSE:", "BPM:", "TITLE:", "#START", "#END" };
+            //検索用カウンタ
+            int i_カウンタ = 0;
+            int flag = 0;
 
-            //BPMがない
-
-            //COURSE:の記述がない
-
-            //#STARTがない
-
-            //#ENDがない
-
-            return true;
+            while (i_カウンタ < fumen_全体.Count())
+            {
+                for(int i = 0;i < search_要素.Length;++i)
+                {
+                    if (this.fumen_全体[i_カウンタ] == search_要素[i])
+                    {
+                        //ビットで計算させる
+                        flag += 1;
+                        break;
+                    }
+                }
+                ++i_カウンタ;
+            }
+            return flag == search_要素.Length;
         }
     }
 }
