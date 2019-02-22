@@ -17,3 +17,4 @@ C:\Users\takum\Desktop\Taiko\Taiko\obj\Debug\Taiko.csproj.CoreCompileInputs.cach
 C:\Users\takum\Desktop\Taiko\Taiko\obj\Debug\Taiko.exe
 C:\Users\takum\Desktop\Taiko\Taiko\obj\Debug\Taiko.pdb
 C:\Users\game\Desktop\Taiko\Taiko\obj\Debug\Taiko.csprojResolveAssemblyReference.cache
+C:\Users\takum\Desktop\Taiko\Taiko\obj\Debug\Taiko.csprojAssemblyReference.cache

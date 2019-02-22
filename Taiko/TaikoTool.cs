@@ -11,18 +11,48 @@ using System.IO;
 
 namespace Taiko
 {
+    struct 連打ベース
+    {
+        public int 風船割り中;
+        public int 風船割れた;
+        public int 連打点;
+    }
+
+    public enum ScoreMode
+    {
+        旧基準,
+        新基準,
+    };
+
+    public enum 連打数
+    {
+        おすすめ,
+        自作
+    };
+
     struct Score
     {
         public int 最大コンボ数;
         public int スコア計算結果;
+        public ScoreMode scoreMode;
+        public 連打数 rn連打モード;
+        public int 通常連打数;
+        public int 風船割り中;
+        public int 風船割れた回数;
     };
+
+    
 
     public partial class 太鼓スコアシミュレータ : Form
     {
         private bool fileNameflag;
+        private string ba風船の情報;
         //読み込んだ専用ファイル
         private List<string> line_全譜面 = new List<string>();
         private List<string> line_鬼譜面 = new List<string>();
+
+        private Score score;
+        private 連打ベース rn連打モード;
 
 
         public 太鼓スコアシミュレータ()
@@ -32,6 +62,10 @@ namespace Taiko
         private void 太鼓スコアシミュレータ_Load(object sender, EventArgs e)
         {
             fileNameflag = false;
+            score = new Score();
+            score.rn連打モード = new 連打数();
+            score.scoreMode = new ScoreMode();
+            rn連打モード = new 連打ベース();
         }
 
         private void buttonファイル読み込み_Click(object sender, EventArgs e)
@@ -142,10 +176,18 @@ namespace Taiko
                 ++count;
             }
             this.line_鬼譜面.Add(end);
+            this.ba風船の情報 = this.風船の情報を取得する();
 
             Score score = new Score();
-            score.スコア計算結果 = 0;
+            //データを取得する
+            score.スコア計算結果 = スコア計算時_天井スコアの確認();
             score.最大コンボ数 = コンボ数の計算();
+            score.通常連打数 = 連打数取得();
+            score.風船割り中 = this.風船連打数();
+            score.風船割れた回数 = this.風船割れた回数();
+
+            //データ集合
+
         }
 
         private int コンボ数の計算()
@@ -229,6 +271,157 @@ namespace Taiko
                 }
             }
             return conbo;
+        }
+
+        private void radioButton新基準_CheckedChanged(object sender, EventArgs e)
+        {
+            this.score.scoreMode = ScoreMode.新基準;
+            this.rn連打モード.連打点 = 100;
+            this.rn連打モード.風船割り中 = 300;
+            this.rn連打モード.風船割れた = 5000;
+        }
+
+        private void radioButton旧基準_CheckedChanged(object sender, EventArgs e)
+        {
+            this.score.scoreMode = ScoreMode.旧基準;
+            this.rn連打モード.連打点 = 300;
+            this.rn連打モード.風船割り中 = 300;
+            this.rn連打モード.風船割れた = 5000;
+        }
+
+        private int スコア計算時_天井スコアの確認()
+        {
+            return (int)this.numericUpDown天井スコア.Value;
+        }
+
+        private int 連打数取得()
+        {   
+            return (int)this.numericUpDown連打数.Value;
+        }
+
+        private int 風船割れた回数()
+        {
+            int ballon = 0;
+            if (this.checkBox風船回数自動.CheckState == CheckState.Unchecked)
+            {
+                return (int)this.numericUpDown風船回数.Value;
+            }
+
+            //割れる回数をチェックする
+            if(this.ba風船の情報 != null)
+            {
+                ballon = this.風船回数の取得();
+            }
+
+            return ballon;
+        }
+
+        private int 風船連打数()
+        {
+            int ballon = 0;
+            if(this.checkBox風船回数自動.CheckState == CheckState.Unchecked)
+            {
+                //最後のスコア計算は異なるため
+                return (int)this.numericUpDown風船連打数.Value - this.風船割れた回数();
+            }
+
+            if(this.ba風船の情報 != null)
+            {
+                ballon = this.風船連打数の取得();
+            }
+            return ballon;
+        }
+
+        private void checkBox連打数_CheckedChanged(object sender, EventArgs e)
+        {
+            this.score.rn連打モード = 連打数.おすすめ;
+        }
+
+        private string 風船の情報を取得する()
+        {
+            int counter = 0;
+
+            string search = null;
+            //線形で　文字列の取得する
+            for(; counter < this.line_鬼譜面.Count; ++counter)
+            {
+                if(this.line_鬼譜面[counter].Length < 6)
+                {
+                    continue;
+                }
+                if(this.line_鬼譜面[counter].Substring(0,6) == "#START")
+                {
+                    return null;
+                }
+                //ある程度認識させる
+                if(this.line_鬼譜面[counter].Substring(0,2) != "BA")
+                {
+                    continue;
+                }
+                if (this.line_鬼譜面[counter].Substring(0,8) == "BALLOON:")
+                {
+                    search = this.line_鬼譜面[counter];
+                    break;
+                }
+            }
+
+            //BALLOON:を消す
+            search = search.Substring(8, search.Length - 8);
+
+            return search;
+        }
+
+        private int 風船回数の取得()
+        {
+            int count = 0;
+
+            for(int i = 0; i < this.ba風船の情報.Length;++i)
+            {
+                if(this.ba風船の情報.Substring(i,1) == ",")
+                {
+                    count += 1;
+                }
+            }
+
+            //ラストの風船を数える
+            count += 1;
+            return count;
+        }
+
+        private int 風船連打数の取得()
+        {
+            int count = 0;
+            //文字列のコピーをする
+            string search = null;
+            //初回はAddが飛ばしてしまうので
+            bool ballonFirst = false;
+
+            List<int> ballon = new List<int>();
+
+            for(int i = 0; i < this.ba風船の情報.Length;++i)
+            {
+                if(this.ba風船の情報.Substring(i,1) != ",")
+                {
+                    //文字列のコピー
+                    search += this.ba風船の情報.Substring(i, 1);
+                }
+                else
+                {
+                    ballon.Add(int.Parse(search));
+                    ballonFirst = true;
+                    search = null;
+                }
+            }
+            //1回しか風船をやらない
+            if(!ballonFirst)
+            {
+                ballon.Add(int.Parse(search));
+            }
+            for(int i = 0; i < ballon.Count;++i)
+            {
+                count += ballon[i];
+            }
+            return count;
         }
     }
 }
