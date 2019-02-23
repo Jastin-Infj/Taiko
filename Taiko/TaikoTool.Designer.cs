@@ -36,6 +36,8 @@
             this.buttonファイル読み込み = new System.Windows.Forms.Button();
             this.buttonスコア計算 = new System.Windows.Forms.Button();
             this.panel天井スコア = new System.Windows.Forms.Panel();
+            this.labelスコアINIT = new System.Windows.Forms.Label();
+            this.label理想スコア = new System.Windows.Forms.Label();
             this.numericUpDown風船回数 = new System.Windows.Forms.NumericUpDown();
             this.label風船回数 = new System.Windows.Forms.Label();
             this.numericUpDown風船連打数 = new System.Windows.Forms.NumericUpDown();
@@ -46,6 +48,8 @@
             this.label理想天井スコア = new System.Windows.Forms.Label();
             this.checkBox連打数 = new System.Windows.Forms.CheckBox();
             this.checkBox風船回数自動 = new System.Windows.Forms.CheckBox();
+            this.checkBox連打込みの天井スコア = new System.Windows.Forms.CheckBox();
+            this.checkBox小数点を四捨五入する = new System.Windows.Forms.CheckBox();
             this.panelスコア配点モード.SuspendLayout();
             this.panel天井スコア.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown風船回数)).BeginInit();
@@ -139,6 +143,8 @@
             // 
             // panel天井スコア
             // 
+            this.panel天井スコア.Controls.Add(this.labelスコアINIT);
+            this.panel天井スコア.Controls.Add(this.label理想スコア);
             this.panel天井スコア.Controls.Add(this.numericUpDown風船回数);
             this.panel天井スコア.Controls.Add(this.label風船回数);
             this.panel天井スコア.Controls.Add(this.numericUpDown風船連打数);
@@ -152,6 +158,23 @@
             this.panel天井スコア.Name = "panel天井スコア";
             this.panel天井スコア.Size = new System.Drawing.Size(350, 275);
             this.panel天井スコア.TabIndex = 6;
+            // 
+            // labelスコアINIT
+            // 
+            this.labelスコアINIT.AutoSize = true;
+            this.labelスコアINIT.Location = new System.Drawing.Point(204, 180);
+            this.labelスコアINIT.Name = "labelスコアINIT";
+            this.labelスコアINIT.Size = new System.Drawing.Size(0, 24);
+            this.labelスコアINIT.TabIndex = 25;
+            // 
+            // label理想スコア
+            // 
+            this.label理想スコア.AutoSize = true;
+            this.label理想スコア.Font = new System.Drawing.Font("MS UI Gothic", 16F);
+            this.label理想スコア.Location = new System.Drawing.Point(32, 180);
+            this.label理想スコア.Name = "label理想スコア";
+            this.label理想スコア.Size = new System.Drawing.Size(0, 33);
+            this.label理想スコア.TabIndex = 24;
             // 
             // numericUpDown風船回数
             // 
@@ -239,31 +262,54 @@
             // checkBox連打数
             // 
             this.checkBox連打数.AutoSize = true;
-            this.checkBox連打数.Location = new System.Drawing.Point(405, 311);
+            this.checkBox連打数.Location = new System.Drawing.Point(376, 315);
             this.checkBox連打数.Name = "checkBox連打数";
             this.checkBox連打数.Size = new System.Drawing.Size(148, 22);
             this.checkBox連打数.TabIndex = 7;
             this.checkBox連打数.Text = "連打数おすすめ";
             this.checkBox連打数.UseVisualStyleBackColor = true;
-            this.checkBox連打数.CheckedChanged += new System.EventHandler(this.checkBox連打数_CheckedChanged);
             // 
             // checkBox風船回数自動
             // 
             this.checkBox風船回数自動.AutoSize = true;
             this.checkBox風船回数自動.Checked = true;
             this.checkBox風船回数自動.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox風船回数自動.Location = new System.Drawing.Point(405, 349);
+            this.checkBox風船回数自動.Location = new System.Drawing.Point(376, 352);
             this.checkBox風船回数自動.Name = "checkBox風船回数自動";
             this.checkBox風船回数自動.Size = new System.Drawing.Size(142, 22);
             this.checkBox風船回数自動.TabIndex = 8;
             this.checkBox風船回数自動.Text = "風船回数自動";
             this.checkBox風船回数自動.UseVisualStyleBackColor = true;
             // 
+            // checkBox連打込みの天井スコア
+            // 
+            this.checkBox連打込みの天井スコア.AutoSize = true;
+            this.checkBox連打込みの天井スコア.Checked = true;
+            this.checkBox連打込みの天井スコア.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox連打込みの天井スコア.Location = new System.Drawing.Point(376, 272);
+            this.checkBox連打込みの天井スコア.Name = "checkBox連打込みの天井スコア";
+            this.checkBox連打込みの天井スコア.Size = new System.Drawing.Size(195, 22);
+            this.checkBox連打込みの天井スコア.TabIndex = 9;
+            this.checkBox連打込みの天井スコア.Text = "連打込みの天井スコア";
+            this.checkBox連打込みの天井スコア.UseVisualStyleBackColor = true;
+            // 
+            // checkBox小数点を四捨五入する
+            // 
+            this.checkBox小数点を四捨五入する.AutoSize = true;
+            this.checkBox小数点を四捨五入する.Location = new System.Drawing.Point(377, 387);
+            this.checkBox小数点を四捨五入する.Name = "checkBox小数点を四捨五入する";
+            this.checkBox小数点を四捨五入する.Size = new System.Drawing.Size(203, 22);
+            this.checkBox小数点を四捨五入する.TabIndex = 10;
+            this.checkBox小数点を四捨五入する.Text = "小数点を四捨五入する";
+            this.checkBox小数点を四捨五入する.UseVisualStyleBackColor = true;
+            // 
             // 太鼓スコアシミュレータ
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(588, 539);
+            this.ClientSize = new System.Drawing.Size(624, 539);
+            this.Controls.Add(this.checkBox小数点を四捨五入する);
+            this.Controls.Add(this.checkBox連打込みの天井スコア);
             this.Controls.Add(this.checkBox風船回数自動);
             this.Controls.Add(this.checkBox連打数);
             this.Controls.Add(this.panel天井スコア);
@@ -307,6 +353,10 @@
         private System.Windows.Forms.NumericUpDown numericUpDown風船連打数;
         private System.Windows.Forms.Label label風船連打数;
         private System.Windows.Forms.CheckBox checkBox風船回数自動;
+        private System.Windows.Forms.Label label理想スコア;
+        private System.Windows.Forms.CheckBox checkBox連打込みの天井スコア;
+        private System.Windows.Forms.CheckBox checkBox小数点を四捨五入する;
+        private System.Windows.Forms.Label labelスコアINIT;
     }
 }
 
