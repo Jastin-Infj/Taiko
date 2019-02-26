@@ -50,12 +50,20 @@
             this.checkBox風船回数自動 = new System.Windows.Forms.CheckBox();
             this.checkBox連打込みの天井スコア = new System.Windows.Forms.CheckBox();
             this.checkBox小数点を四捨五入する = new System.Windows.Forms.CheckBox();
+            this.panel譜面制作対象 = new System.Windows.Forms.Panel();
+            this.radioButtonかんたん譜面 = new System.Windows.Forms.RadioButton();
+            this.radioButtonふつう譜面 = new System.Windows.Forms.RadioButton();
+            this.radioButtonむずかしい譜面 = new System.Windows.Forms.RadioButton();
+            this.radioButtonおに譜面 = new System.Windows.Forms.RadioButton();
+            this.radioButton裏譜面その他 = new System.Windows.Forms.RadioButton();
+            this.checkBoxCOURSEがない = new System.Windows.Forms.CheckBox();
             this.panelスコア配点モード.SuspendLayout();
             this.panel天井スコア.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown風船回数)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown風船連打数)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown連打数)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown天井スコア)).BeginInit();
+            this.panel譜面制作対象.SuspendLayout();
             this.SuspendLayout();
             // 
             // radioButton旧基準
@@ -66,14 +74,13 @@
             this.radioButton旧基準.Name = "radioButton旧基準";
             this.radioButton旧基準.Size = new System.Drawing.Size(87, 22);
             this.radioButton旧基準.TabIndex = 0;
-            this.radioButton旧基準.TabStop = true;
             this.radioButton旧基準.Text = "旧基準";
             this.radioButton旧基準.UseVisualStyleBackColor = true;
-            this.radioButton旧基準.CheckedChanged += new System.EventHandler(this.radioButton旧基準_CheckedChanged);
             // 
             // radioButton新基準
             // 
             this.radioButton新基準.AutoSize = true;
+            this.radioButton新基準.Checked = true;
             this.radioButton新基準.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.radioButton新基準.Location = new System.Drawing.Point(207, 105);
             this.radioButton新基準.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
@@ -83,7 +90,6 @@
             this.radioButton新基準.TabStop = true;
             this.radioButton新基準.Text = "新基準";
             this.radioButton新基準.UseVisualStyleBackColor = true;
-            this.radioButton新基準.CheckedChanged += new System.EventHandler(this.radioButton新基準_CheckedChanged);
             // 
             // panelスコア配点モード
             // 
@@ -164,7 +170,7 @@
             this.labelスコアINIT.AutoSize = true;
             this.labelスコアINIT.Location = new System.Drawing.Point(204, 180);
             this.labelスコアINIT.Name = "labelスコアINIT";
-            this.labelスコアINIT.Size = new System.Drawing.Size(0, 24);
+            this.labelスコアINIT.Size = new System.Drawing.Size(0, 18);
             this.labelスコアINIT.TabIndex = 25;
             // 
             // label理想スコア
@@ -268,6 +274,7 @@
             this.checkBox連打数.TabIndex = 7;
             this.checkBox連打数.Text = "連打数おすすめ";
             this.checkBox連打数.UseVisualStyleBackColor = true;
+            this.checkBox連打数.CheckedChanged += new System.EventHandler(this.checkBox連打数_CheckedChanged);
             // 
             // checkBox風船回数自動
             // 
@@ -303,11 +310,87 @@
             this.checkBox小数点を四捨五入する.Text = "小数点を四捨五入する";
             this.checkBox小数点を四捨五入する.UseVisualStyleBackColor = true;
             // 
+            // panel譜面制作対象
+            // 
+            this.panel譜面制作対象.Controls.Add(this.radioButton裏譜面その他);
+            this.panel譜面制作対象.Controls.Add(this.radioButtonおに譜面);
+            this.panel譜面制作対象.Controls.Add(this.radioButtonむずかしい譜面);
+            this.panel譜面制作対象.Controls.Add(this.radioButtonふつう譜面);
+            this.panel譜面制作対象.Controls.Add(this.radioButtonかんたん譜面);
+            this.panel譜面制作対象.Location = new System.Drawing.Point(20, 170);
+            this.panel譜面制作対象.Name = "panel譜面制作対象";
+            this.panel譜面制作対象.Size = new System.Drawing.Size(623, 43);
+            this.panel譜面制作対象.TabIndex = 11;
+            // 
+            // radioButtonかんたん譜面
+            // 
+            this.radioButtonかんたん譜面.AutoSize = true;
+            this.radioButtonかんたん譜面.Location = new System.Drawing.Point(32, 3);
+            this.radioButtonかんたん譜面.Name = "radioButtonかんたん譜面";
+            this.radioButtonかんたん譜面.Size = new System.Drawing.Size(92, 22);
+            this.radioButtonかんたん譜面.TabIndex = 0;
+            this.radioButtonかんたん譜面.Text = "かんたん";
+            this.radioButtonかんたん譜面.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonふつう譜面
+            // 
+            this.radioButtonふつう譜面.AutoSize = true;
+            this.radioButtonふつう譜面.Location = new System.Drawing.Point(143, 3);
+            this.radioButtonふつう譜面.Name = "radioButtonふつう譜面";
+            this.radioButtonふつう譜面.Size = new System.Drawing.Size(73, 22);
+            this.radioButtonふつう譜面.TabIndex = 1;
+            this.radioButtonふつう譜面.Text = "ふつう";
+            this.radioButtonふつう譜面.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonむずかしい譜面
+            // 
+            this.radioButtonむずかしい譜面.AutoSize = true;
+            this.radioButtonむずかしい譜面.Location = new System.Drawing.Point(237, 3);
+            this.radioButtonむずかしい譜面.Name = "radioButtonむずかしい譜面";
+            this.radioButtonむずかしい譜面.Size = new System.Drawing.Size(106, 22);
+            this.radioButtonむずかしい譜面.TabIndex = 2;
+            this.radioButtonむずかしい譜面.Text = "むずかしい";
+            this.radioButtonむずかしい譜面.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonおに譜面
+            // 
+            this.radioButtonおに譜面.AutoSize = true;
+            this.radioButtonおに譜面.Checked = true;
+            this.radioButtonおに譜面.Location = new System.Drawing.Point(356, 3);
+            this.radioButtonおに譜面.Name = "radioButtonおに譜面";
+            this.radioButtonおに譜面.Size = new System.Drawing.Size(62, 22);
+            this.radioButtonおに譜面.TabIndex = 3;
+            this.radioButtonおに譜面.TabStop = true;
+            this.radioButtonおに譜面.Text = "おに";
+            this.radioButtonおに譜面.UseVisualStyleBackColor = true;
+            // 
+            // radioButton裏譜面その他
+            // 
+            this.radioButton裏譜面その他.AutoSize = true;
+            this.radioButton裏譜面その他.Location = new System.Drawing.Point(429, 3);
+            this.radioButton裏譜面その他.Name = "radioButton裏譜面その他";
+            this.radioButton裏譜面その他.Size = new System.Drawing.Size(176, 22);
+            this.radioButton裏譜面その他.TabIndex = 4;
+            this.radioButton裏譜面その他.Text = "裏譜面またはその他";
+            this.radioButton裏譜面その他.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxCOURSEがない
+            // 
+            this.checkBoxCOURSEがない.AutoSize = true;
+            this.checkBoxCOURSEがない.Location = new System.Drawing.Point(551, 352);
+            this.checkBoxCOURSEがない.Name = "checkBoxCOURSEがない";
+            this.checkBoxCOURSEがない.Size = new System.Drawing.Size(152, 22);
+            this.checkBoxCOURSEがない.TabIndex = 12;
+            this.checkBoxCOURSEがない.Text = "COURSE:がない";
+            this.checkBoxCOURSEがない.UseVisualStyleBackColor = true;
+            // 
             // 太鼓スコアシミュレータ
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(624, 539);
+            this.ClientSize = new System.Drawing.Size(765, 539);
+            this.Controls.Add(this.checkBoxCOURSEがない);
+            this.Controls.Add(this.panel譜面制作対象);
             this.Controls.Add(this.checkBox小数点を四捨五入する);
             this.Controls.Add(this.checkBox連打込みの天井スコア);
             this.Controls.Add(this.checkBox風船回数自動);
@@ -328,6 +411,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown風船連打数)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown連打数)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown天井スコア)).EndInit();
+            this.panel譜面制作対象.ResumeLayout(false);
+            this.panel譜面制作対象.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -357,6 +442,13 @@
         private System.Windows.Forms.CheckBox checkBox連打込みの天井スコア;
         private System.Windows.Forms.CheckBox checkBox小数点を四捨五入する;
         private System.Windows.Forms.Label labelスコアINIT;
+        private System.Windows.Forms.Panel panel譜面制作対象;
+        private System.Windows.Forms.RadioButton radioButton裏譜面その他;
+        private System.Windows.Forms.RadioButton radioButtonおに譜面;
+        private System.Windows.Forms.RadioButton radioButtonむずかしい譜面;
+        private System.Windows.Forms.RadioButton radioButtonふつう譜面;
+        private System.Windows.Forms.RadioButton radioButtonかんたん譜面;
+        private System.Windows.Forms.CheckBox checkBoxCOURSEがない;
     }
 }
 

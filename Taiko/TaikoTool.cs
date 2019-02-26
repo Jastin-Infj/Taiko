@@ -18,17 +18,10 @@ namespace Taiko
         public int 連打点;
     }
 
-    public enum ScoreMode
-    {
-        旧基準,
-        新基準,
-    };
-
     struct Score
     {
         public int 最大コンボ数;
         public int 理想天井スコア;
-        public ScoreMode scoreMode;
         public int 通常連打数;
         public int 風船割り中;
         public int 風船割れた回数;
@@ -43,6 +36,10 @@ namespace Taiko
         //読み込んだ専用ファイル
         private List<string> line_全譜面 = new List<string>();
         private List<string> line_鬼譜面 = new List<string>();
+        private List<string> line_裏譜面 = new List<string>();
+        private List<string> line_難譜面 = new List<string>();
+        private List<string> line_普譜面 = new List<string>();
+        private List<string> line_簡譜面 = new List<string>();
 
         private Score score;
         private 連打ベース rn連打ベース;
@@ -56,7 +53,6 @@ namespace Taiko
         {
             fileNameflag = false;
             score = new Score();
-            score.scoreMode = new ScoreMode();
             rn連打ベース = new 連打ベース();
         }
 
@@ -104,14 +100,22 @@ namespace Taiko
             {
                 return;
             }
-            this.TJAplayer3鬼譜面配列作成();
+            this.TJAplayer3スコア計算作成();
         }
 
         private void TJAplayer3テキスト読み込み()
         {
-            //ファイルを読み込み
-            StreamReader sr = new StreamReader(textBoxTJAファイル読み込み.Text, Encoding.GetEncoding("Shift_JIS"));
-
+            StreamReader sr = null;
+            try
+            {
+                //ファイルを読み込み
+                sr = new StreamReader(textBoxTJAファイル読み込み.Text, Encoding.GetEncoding("Shift_JIS"));
+            }
+            catch
+            {
+                return;
+            }
+           
             while (sr.Peek() >= 0)
             {
                 //ファイルを1行ずつ読み込み
@@ -119,6 +123,22 @@ namespace Taiko
                 this.line_全譜面.Add(stBuffer);
             }
             sr.Close();
+
+            //対象がnullであるか？
+            if (line配列削除するか())
+            {
+                this.line配列譜面の削除();
+            }
+
+            //フラグが全部通った
+            int c_不正チェック通常 = 7;
+            if (this.TJAplayer3鬼譜面のみ吸い取り不正チェック() != c_不正チェック通常)
+            {
+                return;
+            }
+
+            //対象の配列作成
+            this.譜面作成(this.スコア配点の対象の取得());
         }
 
         private int TJAplayer3鬼譜面のみ吸い取り不正チェック()
@@ -149,49 +169,30 @@ namespace Taiko
             return flag;
         }
 
-        private void TJAplayer3鬼譜面配列作成()
+        private void TJAplayer3スコア計算作成()
         {
-            //フラグが全部通った
-            int c_不正チェック通常 = 7;
-            if (this.TJAplayer3鬼譜面のみ吸い取り不正チェック() != c_不正チェック通常)
-            {
-                return;
-            }
-            string end = "#END";
-            int count = 0;
-
-            //線形
-            while (this.line_全譜面[count] != end)
-            {
-                this.line_鬼譜面.Add(this.line_全譜面[count]);
-                ++count;
-            }
-            this.line_鬼譜面.Add(end);
-            this.ba風船の情報 = this.風船の情報を取得する();
-
+            this.ba風船の情報 = this.風船の情報を取得する(スコア配点の対象の取得());
 
             //データを取得する
             score.理想天井スコア = this.理想天井スコアの取得();
-            score.最大コンボ数 = コンボ数の計算();
+            score.最大コンボ数 = コンボ数の計算(スコア配点の対象の取得());
             score.通常連打数 = 連打数取得();
             score.風船割り中 = this.風船連打数();
             score.風船割れた回数 = this.風船割れた回数();
 
             //データ集合
             this.スコア計算(this.score);
-
-            this.line_鬼譜面.Clear();
         }
 
-        private int コンボ数の計算()
+        private int コンボ数の計算(List<string>list)
         {
             int conbo = 0;
             int counter = 0;
             string nowcheck = null;
             //譜面チェック
-            while (counter < this.line_鬼譜面.Count)
+            while (counter < list.Count)
             {
-                nowcheck = this.line_鬼譜面[counter];
+                nowcheck = list[counter];
                 string now = null;
                 //空白しかなかった
                 if (nowcheck.Length == 0)
@@ -238,6 +239,196 @@ namespace Taiko
             return conbo;
         }
 
+        private void 譜面作成(List<string> list)
+        {
+            string[] checks = null;
+
+            string line_start = "COURSE:";
+            string line = null;
+            int counter = 0;
+
+            while (true)
+            {
+                line = this.line_全譜面[counter];
+                if (line == "")
+                {
+                    counter += 1;
+                    continue;
+                }
+                //C以外
+                if (line.Substring(0, 1) != "C")
+                {
+                    list.Add(line);
+                    counter += 1;
+                    continue;
+                }
+                //COURSE:のみだった
+                if (line == line_start)
+                {
+                    counter += 1;
+                    continue;
+                }
+                break;
+            }
+
+            if (this.radioButtonおに譜面.Checked)
+            {
+                checks = new string[] { "COURSE:Oni", "COURSE:3", "COURSE:oni" };
+            }
+            else if (this.radioButton裏譜面その他.Checked)
+            {
+                checks = new string[] { "COURSE:edit", "COURSE:4", "COURSE:Edit" };
+            }
+            else if (this.radioButtonかんたん譜面.Checked)
+            {
+                checks = new string[] { "COURSE:0", "COURSE:Easy", "COURSE:easy" };
+            }
+            else if (this.radioButtonふつう譜面.Checked)
+            {
+                checks = new string[] { "COURSE:1", "COURSE:normal", "COURSE:Normal" };
+            }
+            else if (this.radioButtonむずかしい譜面.Checked)
+            {
+                checks = new string[] { "COURSE:2", "COURSE:Hard", "COURSE:hard" };
+            }
+
+            bool flag = false;
+
+            while (true)
+            {
+                line = this.line_全譜面[counter];
+                //譜面中に空白あり
+                if (line.Length == 0)
+                {
+                    counter += 1;
+                    continue;
+                }
+                if (line.Substring(0, 1) != "C")
+                {
+                    counter += 1;
+                    continue;
+                }
+                //COURSEの検索
+                for (int i = 0; i < checks.Length; ++i)
+                {
+                    if (line != checks[i])
+                    {
+                        continue;
+                    }
+
+                    //一致した場合
+                    flag = true;
+                    break;
+                }
+                if(flag)
+                {
+                    break;
+                }
+                //何も一致しない場合
+                counter += 1;
+            }
+            //検索フラグを元に戻す
+            flag = false;
+            line_start = "#END";
+
+            //譜面のコピーを開始する
+            while(true)
+            {
+                line = this.line_全譜面[counter];
+                if(line == "")
+                {
+                    counter += 1;
+                    continue;
+                }
+                if(line != line_start)
+                {
+                    list.Add(line);
+                    counter += 1;
+                    continue;
+                }
+                else
+                {
+                    list.Add(line_start);
+                    break;
+                }
+            }
+        }
+
+        private List<string> スコア配点の対象の取得()
+        {
+            if(this.radioButtonおに譜面.Checked)
+            {
+                return this.line_鬼譜面;
+            }
+            else if(this.radioButton裏譜面その他.Checked)
+            {
+                return this.line_裏譜面;
+            }
+            else if(this.radioButtonむずかしい譜面.Checked)
+            {
+                return this.line_難譜面;
+            }
+            else if(this.radioButtonふつう譜面.Checked)
+            {
+                return this.line_普譜面;
+            }
+            else if(this.radioButtonかんたん譜面.Checked)
+            {
+                return this.line_簡譜面;
+            }
+            return null;
+        }
+
+        private bool line配列削除するか()
+        {
+            //そもそも中身がない
+            if(this.line_全譜面 == null)
+            {
+                return true;
+            }
+            //チェック項目がついている譜面を確認
+            List<string> list = スコア配点の対象の取得();
+            //こちらがない
+            if(list == null || list.Count == 0)
+            {
+                return true;
+            }
+
+            //タイトル名の確認
+            string line = this.line_全譜面[0];
+            if(line != list[0])
+            {
+                return true;
+            }
+
+            //同じ対象物だったら削除しない
+            return false;
+        }
+
+        private void line配列譜面の削除()
+        {
+            if(this.radioButtonおに譜面.Checked)
+            {
+                this.line_鬼譜面.Clear();
+            }
+            else if(this.radioButton裏譜面その他.Checked)
+            {
+                this.line_裏譜面.Clear();
+            }
+            else if(this.radioButtonむずかしい譜面.Checked)
+            {
+                this.line_難譜面.Clear();
+            }
+            else if(this.radioButtonふつう譜面.Checked)
+            {
+                this.line_普譜面.Clear();
+            }
+            else if(this.radioButtonかんたん譜面.Checked)
+            {
+                this.line_簡譜面.Clear();
+            }
+        }
+
         private bool 数字譜面確認(string line)
         {
             string check = line.Substring(0, 1);
@@ -264,22 +455,6 @@ namespace Taiko
                 }
             }
             return conbo;
-        }
-
-        private void radioButton新基準_CheckedChanged(object sender, EventArgs e)
-        {
-            this.score.scoreMode = ScoreMode.新基準;
-            this.rn連打ベース.連打点 = 100;
-            this.rn連打ベース.風船割り中 = 300;
-            this.rn連打ベース.風船割れた = 5000;
-        }
-
-        private void radioButton旧基準_CheckedChanged(object sender, EventArgs e)
-        {
-            this.score.scoreMode = ScoreMode.旧基準;
-            this.rn連打ベース.連打点 = 300;
-            this.rn連打ベース.風船割り中 = 300;
-            this.rn連打ベース.風船割れた = 5000;
         }
 
         private int 理想天井スコアの取得()
@@ -325,37 +500,55 @@ namespace Taiko
             return ballon;
         }
 
-        private string 風船の情報を取得する()
+        private string 風船の情報を取得する(List<string> list)
         {
             int counter = 0;
 
             string search = null;
+            string line = null;
+
+            //COURSE:の中にBALLOONが入っているか？
+            bool flag = this.checkBoxCOURSEがない.Checked;
+
             //線形で　文字列の取得する
-            for(; counter < this.line_鬼譜面.Count; ++counter)
+            for(; counter < list.Count; ++counter)
             {
-                if(this.line_鬼譜面[counter].Length < 6)
+                line = list[counter];
+                if(line.Length < 6)
                 {
                     continue;
                 }
-                if(this.line_鬼譜面[counter].Substring(0,6) == "#START")
+                //譜面に入る前に記述されている
+                if(line.Substring(0,6) == "#START")
                 {
                     return null;
                 }
                 //ある程度認識させる
-                if(this.line_鬼譜面[counter].Substring(0,2) != "BA")
+                if(line.Substring(0,2) != "BA")
                 {
                     continue;
                 }
-                if (this.line_鬼譜面[counter].Substring(0,8) == "BALLOON:")
+                else if(line.Substring(0,2) == "CO")
                 {
-                    search = this.line_鬼譜面[counter];
+                    flag = true;
+                }
+                if (line.Substring(0,8) == "BALLOON:" && flag)
+                {
+                    if(line == "BALLOON:")
+                    {
+                        continue;
+                    }
+                    search = line;
                     break;
                 }
             }
 
-            //BALLOON:を消す
-            search = search.Substring(8, search.Length - 8);
-
+            if(search != null)
+            {
+                //BALLOON:を消す
+                search = search.Substring(8, search.Length - 8);
+            }
+          
             return search;
         }
 
@@ -401,7 +594,7 @@ namespace Taiko
                 }
             }
             //1回しか風船をやらない
-            if(!ballonFirst)
+            if(!ballonFirst && search != null)
             {
                 ballon.Add(int.Parse(search));
             }
@@ -416,6 +609,10 @@ namespace Taiko
         {
             //理想天井スコアに合わせる作業
             int total_score = score.理想天井スコア;
+
+            //連打の基準点を確認する
+            this.renda連打の基準点を取得();
+
             //連打回数
             int rendascore_total = this.スコア連打計算(score);
             //風船のスコア
@@ -434,7 +631,9 @@ namespace Taiko
 
             if(conbo == 0)
             {
-                this.label理想スコア.Text = "最大コンボ数が0です";
+                int renda_total = rendaballon_total + rendascore_total;
+                this.label理想スコア.Text = "理想スコア:";
+                this.labelスコアINIT.Text = renda_total.ToString() + "点";
                 return;
             }
             //1conboの点数を計算
@@ -454,11 +653,28 @@ namespace Taiko
             if(result < 0)
             {
                 this.label理想スコア.Text = "天井スコアが少ないです";
+                this.labelスコアINIT.Text = "";
                 return;
             }
 
             this.label理想スコア.Text = "理想スコア:";
             this.labelスコアINIT.Text = result.ToString() + "点";
+        }
+
+        private void renda連打の基準点を取得()
+        {
+            if(this.radioButton新基準.Checked)
+            {
+                this.rn連打ベース.連打点 = 100;
+                this.rn連打ベース.風船割り中 = 300;
+                this.rn連打ベース.風船割れた = 5000;
+            }
+            else if(this.radioButton旧基準.Checked)
+            {
+                this.rn連打ベース.連打点 = 300;
+                this.rn連打ベース.風船割り中 = 300;
+                this.rn連打ベース.風船割れた = 5000;
+            }
         }
 
         private int スコア連打計算(Score score)
@@ -470,7 +686,7 @@ namespace Taiko
             if (checkBox連打数.CheckState == CheckState.Checked)
             {
                 //連打数の読み込み
-                renda = this.連打数の読み込み();
+                renda = this.連打数の読み込み(score, (int)this.numericUpDown連打数.Value);
             }
             else
             {
@@ -481,10 +697,56 @@ namespace Taiko
             return total;
         }
 
-        private int 連打数の読み込み()
+        private int 連打数の読み込み(Score score,int speed)
         {
             int renda = 0;
+            int total_score = 0;
+            if(BPMのデータ取得(スコア配点の対象の取得()) == null)
+            {
+                return 0;
+            }
+            string bpm = BPMのデータ取得(スコア配点の対象の取得());
+            renda = BPMによる連打のオート計算(スコア配点の対象の取得(), bpm,speed);
             return renda;
+        }
+
+        private string BPMのデータ取得(List<string> list)
+        {
+            string result = null;
+            bool flag = false;
+            for (int i = 0; i < list.Count; ++i)
+            {
+                //Bがない
+                if (list[i].Substring(0, 1) != "B")
+                {
+                    continue;
+                }
+                //BPM:で終了しているまたはそれ以外
+                if (list[i].Length < 4)
+                {
+                    continue;
+                }
+                if (list[i].Substring(0, 4) == "BPM:")
+                {
+                    //これで終了している
+                    if (list[i] == "BPM:")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        result = list[i];
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+            //上手くいった
+            if(flag)
+            {
+                result = result.Substring(4, result.Length - 4);
+            }
+            return result;
         }
 
         private int 風船のスコア計算(Score score)
@@ -493,6 +755,60 @@ namespace Taiko
             total += score.風船割り中 * this.rn連打ベース.風船割り中;
             total += score.風船割れた回数 * this.rn連打ベース.風船割れた;
             return total;
+        }
+
+        private int BPMによる連打のオート計算(List<string>list,string Initbpm,int speed)
+        {
+            int renda = 0;
+
+            float bpm = float.Parse(Initbpm);
+            float total_second = 連打のバー秒数を求める(list,bpm,speed);
+
+            return renda;
+        }
+
+        private float 連打のバー秒数を求める(List<string>list,float initbpm,int speed)
+        {
+            float total = 0;
+            //デフォルトは全て4分の4拍子とする
+            int bunbo  = 4;
+            int boushi = 4;
+            int counter = 0;
+
+            string line = null;
+            string temp = null;
+
+            while (counter < list.Count)
+            {
+                line = list[counter];
+
+                //,までをカットする
+                for(int i = 0;i < line.Length;++i)
+                {
+                    if(line.Substring(i,1) != ",")
+                    {
+                        temp += line.Substring(i, 1);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            
+            return total;
+        }
+
+        private void checkBox連打数_CheckedChanged(object sender, EventArgs e)
+        {
+            if(this.checkBox連打数.CheckState == CheckState.Checked)
+            {
+                this.label連打数.Text = "1秒間の連打数";
+            }
+            else
+            {
+                this.label連打数.Text = "連打数";
+            }
         }
     }
 }
