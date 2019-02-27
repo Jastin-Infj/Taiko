@@ -658,7 +658,44 @@ namespace Taiko
             }
 
             this.label理想スコア.Text = "理想スコア:";
-            this.labelスコアINIT.Text = result.ToString() + "点";
+            this.labelスコアINIT.Text = scoreカンマ表記(result.ToString()) + "点";
+
+
+            //天井スコアの表示
+            int total = result * conbo + rendaballon_total + rendascore_total;
+            this.label天井スコアの表示.Text = "天井スコアは" + scoreカンマ表記(total.ToString()) + "点";
+        }
+
+        private string scoreカンマ表記(string str)
+        {
+            //1000000
+            //1 000 000
+            int len = str.Length;
+            int kan = len / 3;
+            int index = len % 3;
+
+            string result = null;
+            int counter = 0;
+            //カンマを入れる
+            for(int i = 0; i < str.Length;++i)
+            {
+                result += str.Substring(i, 1);
+                if(i + 1 == index && index != 0)
+                {
+                    result += "'";
+                    continue;
+                }
+                counter += 1;
+                if(counter == 3)
+                {
+                    if(str.Length - 1 != i)
+                    {
+                        result += "'";
+                    }
+                }
+                
+            }
+            return result;
         }
 
         private void renda連打の基準点を取得()
