@@ -127,11 +127,8 @@ namespace Taiko
             }
             sr.Close();
 
-            //対象がnullであるか？
-            if (line配列削除するか())
-            {
-                this.line配列譜面の削除();
-            }
+            //配列を全て削除しておく
+            this.配列全削除();
 
             //フラグが全部通った
             int c_不正チェック通常 = 7;
@@ -142,6 +139,15 @@ namespace Taiko
 
             //対象の配列作成
             this.譜面作成(this.スコア配点の対象の取得());
+        }
+
+        private void 配列全削除()
+        {
+            this.line_裏譜面.Clear();
+            this.line_鬼譜面.Clear();
+            this.line_難譜面.Clear();
+            this.line_普譜面.Clear();
+            this.line_簡譜面.Clear();
         }
 
         private int TJAplayer3譜面のみ吸い取り不正チェック()
@@ -502,7 +508,7 @@ namespace Taiko
         private int 風船割れた回数()
         {
             int ballon = 0;
-            if (this.checkBox風船回数自動.CheckState == CheckState.Unchecked)
+            if (!this.checkBox風船回数自動.Checked)
             {
                 return (int)this.numericUpDown風船回数.Value;
             }
@@ -519,7 +525,7 @@ namespace Taiko
         private int 風船連打数()
         {
             int ballon = 0;
-            if(this.checkBox風船回数自動.CheckState == CheckState.Unchecked)
+            if(!this.checkBox風船回数自動.Checked)
             {
                 //最後のスコア計算は異なるため
                 return (int)this.numericUpDown風船連打数.Value - this.風船割れた回数();
@@ -555,14 +561,14 @@ namespace Taiko
                 {
                     return null;
                 }
-                //ある程度認識させる
-                if(line.Substring(0,2) != "BA")
-                {
-                    continue;
-                }
-                else if(line.Substring(0,2) == "CO")
+                if (line.Substring(0, 2) == "CO")
                 {
                     flag = true;
+                }
+                //ある程度認識させる
+                if (line.Substring(0,2) != "BA")
+                {
+                    continue;
                 }
                 if (line.Substring(0,8) == "BALLOON:" && flag)
                 {
@@ -1016,7 +1022,7 @@ namespace Taiko
                     else if(line.Substring(0,2) == "#B")
                     {
                         nowbpmstr = line;
-                        nowbpmstr = nowbpmstr.Substring(4, nowbpmstr.Length - 4);
+                        nowbpmstr = nowbpmstr.Substring(11, nowbpmstr.Length - 11);
                         nowbpm = float.Parse(nowbpmstr);
                     }
                     counter += 1;
@@ -1032,8 +1038,18 @@ namespace Taiko
                 //,までカットする
                 for(int i = 0;  i < line.Length;++i)
                 {
-                    if(line.Substring(i,1) == ",")
+                    if(line == ",")
                     {
+                        temp += line.Substring(i,1);
+                        break;
+                    }
+                    if (line.Substring(i,1) == ",")
+                    {
+                        //,の後にコメントつき
+                        if(line.Length != 1)
+                        {
+                            temp += line[i];
+                        }
                         break;
                     }
                     temp += line[i];
@@ -1069,7 +1085,7 @@ namespace Taiko
             else
             {
                 int speed_renda = (int)this.numericUpDown連打数.Value;
-                speed = 1 / speed_renda;
+                speed = 1.0f / speed_renda;
             }
             float total = renda_time / speed;
             renda_total = (int)total;

@@ -387,7 +387,7 @@
             // checkBoxCOURSEがない
             // 
             this.checkBoxCOURSEがない.AutoSize = true;
-            this.checkBoxCOURSEがない.Location = new System.Drawing.Point(551, 352);
+            this.checkBoxCOURSEがない.Location = new System.Drawing.Point(372, 137);
             this.checkBoxCOURSEがない.Name = "checkBoxCOURSEがない";
             this.checkBoxCOURSEがない.Size = new System.Drawing.Size(152, 22);
             this.checkBoxCOURSEがない.TabIndex = 12;

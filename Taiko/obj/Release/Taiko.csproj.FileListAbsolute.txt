@@ -1,0 +1,10 @@
+C:\Users\takum\Desktop\Taiko\Taiko\bin\Release\Taiko.exe.config
+C:\Users\takum\Desktop\Taiko\Taiko\bin\Release\Taiko.exe
+C:\Users\takum\Desktop\Taiko\Taiko\bin\Release\Taiko.pdb
+C:\Users\takum\Desktop\Taiko\Taiko\obj\Release\Taiko.太鼓スコアシミュレータ.resources
+C:\Users\takum\Desktop\Taiko\Taiko\obj\Release\Taiko.Properties.Resources.resources
+C:\Users\takum\Desktop\Taiko\Taiko\obj\Release\Taiko.csproj.GenerateResource.cache
+C:\Users\takum\Desktop\Taiko\Taiko\obj\Release\Taiko.csproj.CoreCompileInputs.cache
+C:\Users\takum\Desktop\Taiko\Taiko\obj\Release\Taiko.exe
+C:\Users\takum\Desktop\Taiko\Taiko\obj\Release\Taiko.pdb
+C:\Users\takum\Desktop\Taiko\Taiko\obj\Release\Taiko.csprojAssemblyReference.cache
