@@ -60,6 +60,9 @@ namespace Taiko
         {
             this.labelスコアINIT.Text = "";
             this.label理想スコア.Text = "";
+            this.label天井スコアの表示.Text = "";
+
+            this.line_全譜面.Clear();
             //ファイルダイアログボックスを生成する
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
@@ -154,7 +157,7 @@ namespace Taiko
                     counter += 1;
                     continue;
                 }
-                if(line.Substring(0,2) == "CO")
+                if(line.Substring(0,2) == "CO" || this.checkBoxCOURSEがない.Checked)
                 {
                     flag |= 1;
                     break;
@@ -252,29 +255,50 @@ namespace Taiko
             string line = null;
             int counter = 0;
 
-            while (true)
+            if(!this.checkBoxCOURSEがない.Checked)
             {
-                line = this.line_全譜面[counter];
-                if (line == "")
+                while (true)
                 {
-                    counter += 1;
-                    continue;
+                    line = this.line_全譜面[counter];
+                    if (line == "")
+                    {
+                        counter += 1;
+                        continue;
+                    }
+                    //C以外
+                    if (line.Substring(0, 1) != "C")
+                    {
+                        list.Add(line);
+                        counter += 1;
+                        continue;
+                    }
+                    //COURSE:のみだった
+                    if (line == line_start)
+                    {
+                        counter += 1;
+                        continue;
+                    }
+                    break;
                 }
-                //C以外
-                if (line.Substring(0, 1) != "C")
-                {
-                    list.Add(line);
-                    counter += 1;
-                    continue;
-                }
-                //COURSE:のみだった
-                if (line == line_start)
-                {
-                    counter += 1;
-                    continue;
-                }
-                break;
             }
+            else
+            {
+                string search = null;
+                while(counter < this.line_全譜面.Count)
+                {
+                    search = this.line_全譜面[counter];
+                    counter += 1;
+                    if (search.Length == 0 || search.Length == 1)
+                    {
+                        continue;
+                    }
+                    if (search.Substring(0,3) == "#ST")
+                    {
+                        break;
+                    }
+                }
+            }
+            
 
             if (this.radioButtonおに譜面.Checked)
             {
@@ -299,38 +323,41 @@ namespace Taiko
 
             bool flag = false;
 
-            while (true)
+            if(!this.checkBoxCOURSEがない.Checked)
             {
-                line = this.line_全譜面[counter];
-                //譜面中に空白あり
-                if (line.Length == 0)
+                while (true)
                 {
-                    counter += 1;
-                    continue;
-                }
-                if (line.Substring(0, 1) != "C")
-                {
-                    counter += 1;
-                    continue;
-                }
-                //COURSEの検索
-                for (int i = 0; i < checks.Length; ++i)
-                {
-                    if (line != checks[i])
+                    line = this.line_全譜面[counter];
+                    //譜面中に空白あり
+                    if (line.Length == 0)
                     {
+                        counter += 1;
                         continue;
                     }
+                    if (line.Substring(0, 1) != "C")
+                    {
+                        counter += 1;
+                        continue;
+                    }
+                    //COURSEの検索
+                    for (int i = 0; i < checks.Length; ++i)
+                    {
+                        if (line != checks[i])
+                        {
+                            continue;
+                        }
 
-                    //一致した場合
-                    flag = true;
-                    break;
+                        //一致した場合
+                        flag = true;
+                        break;
+                    }
+                    if (flag)
+                    {
+                        break;
+                    }
+                    //何も一致しない場合
+                    counter += 1;
                 }
-                if(flag)
-                {
-                    break;
-                }
-                //何も一致しない場合
-                counter += 1;
             }
             //検索フラグを元に戻す
             flag = false;
@@ -673,33 +700,8 @@ namespace Taiko
 
         private string scoreカンマ表記(string str)
         {
-            //1000000
-            //1 000 000
-            int len = str.Length;
-            int kan = len / 3;
-            int index = len % 3;
-
-            string result = null;
-            int counter = 0;
-            //カンマを入れる
-            for(int i = 0; i < str.Length;++i)
-            {
-                result += str.Substring(i, 1);
-                if(i + 1 == index && index != 0)
-                {
-                    result += "'";
-                    continue;
-                }
-                counter += 1;
-                if(counter == 3)
-                {
-                    if(str.Length - 1 != i)
-                    {
-                        result += "'";
-                    }
-                }
-                
-            }
+            int index = int.Parse(str);
+            string result = String.Format("{0:#,#}", index);
             return result;
         }
 
@@ -1061,11 +1063,13 @@ namespace Taiko
             //連打数の確認
             if(this.checkBoxオート連打.Checked)
             {
+                //オートの場合
                 speed = 0.0625f;
             }
             else
             {
-                speed = (float)this.numericUpDown連打数.Value;
+                int speed_renda = (int)this.numericUpDown連打数.Value;
+                speed = 1 / speed_renda;
             }
             float total = renda_time / speed;
             renda_total = (int)total;
@@ -1085,7 +1089,7 @@ namespace Taiko
 
         private void checkBoxオート連打_CheckedChanged(object sender, EventArgs e)
         {
-            this.numericUpDown連打数.Value = (decimal)0.0625;
+            this.numericUpDown連打数.Value = (decimal)14;
         }
     }
 }

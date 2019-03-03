@@ -242,7 +242,7 @@
             131072});
             this.numericUpDown連打数.Location = new System.Drawing.Point(198, 61);
             this.numericUpDown連打数.Maximum = new decimal(new int[] {
-            1,
+            1000,
             0,
             0,
             0});
