@@ -58,6 +58,7 @@
             this.radioButtonかんたん譜面 = new System.Windows.Forms.RadioButton();
             this.checkBoxCOURSEがない = new System.Windows.Forms.CheckBox();
             this.label天井スコアの表示 = new System.Windows.Forms.Label();
+            this.checkBoxオート連打 = new System.Windows.Forms.CheckBox();
             this.panelスコア配点モード.SuspendLayout();
             this.panel天井スコア.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown風船回数)).BeginInit();
@@ -233,9 +234,15 @@
             // 
             // numericUpDown連打数
             // 
+            this.numericUpDown連打数.DecimalPlaces = 6;
+            this.numericUpDown連打数.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
             this.numericUpDown連打数.Location = new System.Drawing.Point(198, 61);
             this.numericUpDown連打数.Maximum = new decimal(new int[] {
-            10000,
+            1,
             0,
             0,
             0});
@@ -269,6 +276,8 @@
             // checkBox連打数
             // 
             this.checkBox連打数.AutoSize = true;
+            this.checkBox連打数.Checked = true;
+            this.checkBox連打数.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox連打数.Location = new System.Drawing.Point(376, 315);
             this.checkBox連打数.Name = "checkBox連打数";
             this.checkBox連打数.Size = new System.Drawing.Size(148, 22);
@@ -393,11 +402,23 @@
             this.label天井スコアの表示.Size = new System.Drawing.Size(0, 18);
             this.label天井スコアの表示.TabIndex = 13;
             // 
+            // checkBoxオート連打
+            // 
+            this.checkBoxオート連打.AutoSize = true;
+            this.checkBoxオート連打.Location = new System.Drawing.Point(551, 314);
+            this.checkBoxオート連打.Name = "checkBoxオート連打";
+            this.checkBoxオート連打.Size = new System.Drawing.Size(145, 22);
+            this.checkBoxオート連打.TabIndex = 14;
+            this.checkBoxオート連打.Text = "オートの連打数";
+            this.checkBoxオート連打.UseVisualStyleBackColor = true;
+            this.checkBoxオート連打.CheckedChanged += new System.EventHandler(this.checkBoxオート連打_CheckedChanged);
+            // 
             // 太鼓スコアシミュレータ
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(765, 539);
+            this.Controls.Add(this.checkBoxオート連打);
             this.Controls.Add(this.label天井スコアの表示);
             this.Controls.Add(this.checkBoxCOURSEがない);
             this.Controls.Add(this.panel譜面制作対象);
@@ -460,6 +481,7 @@
         private System.Windows.Forms.RadioButton radioButtonかんたん譜面;
         private System.Windows.Forms.CheckBox checkBoxCOURSEがない;
         private System.Windows.Forms.Label label天井スコアの表示;
+        private System.Windows.Forms.CheckBox checkBoxオート連打;
     }
 }
 

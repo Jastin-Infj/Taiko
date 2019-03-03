@@ -132,7 +132,7 @@ namespace Taiko
 
             //フラグが全部通った
             int c_不正チェック通常 = 7;
-            if (this.TJAplayer3鬼譜面のみ吸い取り不正チェック() != c_不正チェック通常)
+            if (this.TJAplayer3譜面のみ吸い取り不正チェック() != c_不正チェック通常)
             {
                 return;
             }
@@ -141,20 +141,25 @@ namespace Taiko
             this.譜面作成(this.スコア配点の対象の取得());
         }
 
-        private int TJAplayer3鬼譜面のみ吸い取り不正チェック()
+        private int TJAplayer3譜面のみ吸い取り不正チェック()
         {
             int flag = 0;
-            string[] c_コース名 = { "COURSE:Oni", "COURSE:oni", "COURSE:3", "COURSE:Edit", "COURSE:edit" };
-            for (int i = 0; i < c_コース名.Length; ++i)
+            int counter = 0;
+            string line = null;
+            while(counter < this.line_全譜面.Count)
             {
-                if (this.line_全譜面.Contains(c_コース名[i]))
+                line = this.line_全譜面[counter];
+                if(line.Length == 0 || line.Length == 1)
+                {
+                    counter += 1;
+                    continue;
+                }
+                if(line.Substring(0,2) == "CO")
                 {
                     flag |= 1;
-                }
-                if (flag == 1)
-                {
                     break;
                 }
+                counter += 1;
             }
             //#STARTあるか？
             if (this.line_全譜面.Contains("#START"))
@@ -723,7 +728,7 @@ namespace Taiko
             if (checkBox連打数.CheckState == CheckState.Checked)
             {
                 //連打数の読み込み
-                renda = this.連打数の読み込み(score, (int)this.numericUpDown連打数.Value);
+                renda = this.連打数の読み込み(score);
             }
             else
             {
@@ -734,16 +739,15 @@ namespace Taiko
             return total;
         }
 
-        private int 連打数の読み込み(Score score,int speed)
+        private int 連打数の読み込み(Score score)
         {
             int renda = 0;
-            int total_score = 0;
             string bpm = BPMのデータ取得(スコア配点の対象の取得());
             if (bpm == null)
             {
                 return 0;
             }
-            renda = BPMによる連打のオート計算(スコア配点の対象の取得(), bpm,speed);
+            renda = BPMによる連打のオート計算(スコア配点の対象の取得(), bpm);
             return renda;
         }
 
@@ -794,18 +798,38 @@ namespace Taiko
             return total;
         }
 
-        private int BPMによる連打のオート計算(List<string>list,string Initbpm,int speed)
+        private int BPMによる連打のオート計算(List<string>list,string Initbpm)
         {
-            int renda = 0;
+            float renda = 0;
 
             float bpm = float.Parse(Initbpm);
-            float total_second = 連打のバー秒数を求める(list,bpm,speed);
-
-            return renda;
+            int[] 連打数 = this.連打のバー秒数を求める(list, bpm);
+           
+            //小連打
+            renda += 連打数[0];
+            //大連打
+            renda += 連打数[1] * 2;
+            return (int)renda;
         }
-        private float 連打のバー秒数を求める(List<string>list,float initbpm,int speed)
+        private int[] 連打のバー秒数を求める(List<string>list,float initbpm)
         {
-            float total = 0;
+            int[] total = new int[2];
+            List<string>[] renda = this.連打配列作成(list,initbpm);
+
+            //初期配置のみされた
+            if(renda[0].Count == 2 && renda[1].Count == 2)
+            {
+                return null;
+            }
+
+            total[0] = this.連打数を自動計算をする(renda[0]);
+            total[1] = this.連打数を自動計算をする(renda[1]);
+
+            return total;
+        }
+
+        private List<string>[] 連打配列作成(List<string> list,float Initbpm)
+        {
             //配列番地を数える
             int counter = 0;
 
@@ -813,7 +837,7 @@ namespace Taiko
             string line = null;
 
             //#STARTまではカウンタを進める
-            while(counter < list.Count)
+            while (counter < list.Count)
             {
                 line = list[counter];
                 counter += 1;
@@ -825,6 +849,11 @@ namespace Taiko
             }
             List<string> renda_大 = new List<string>();
             List<string> renda_小 = new List<string>();
+
+            line = "BPM: " + Initbpm.ToString();
+            //初期BPMを追加する
+            renda_大.Add(line);
+            renda_小.Add(line);
 
             //#MEASURE 4/4を追加する
             renda_大.Add("#MEASURE 4/4");
@@ -838,14 +867,14 @@ namespace Taiko
             {
                 line = list[counter];
                 //空白または小節しかなかった
-                if(line.Length == 0 || line.Length == 1)
+                if (line.Length == 0 || line.Length == 1)
                 {
                     //連打状態になっているか？
-                    if(rendaflag_小)
+                    if (rendaflag_小)
                     {
                         renda_小.Add(line);
                     }
-                    if(rendaflag_大)
+                    if (rendaflag_大)
                     {
                         renda_大.Add(line);
                     }
@@ -853,7 +882,7 @@ namespace Taiko
                     continue;
                 }
                 //小節を変更する箇所を発見
-                if(line.Substring(0,2) == "#M")
+                if (line.Substring(0, 2) == "#M")
                 {
                     counter += 1;
                     if (line != "#M")
@@ -863,8 +892,18 @@ namespace Taiko
                     }
                     continue;
                 }
-                if(line.Substring(0,2) == "#S")
+                if (line.Substring(0, 2) == "#S")
                 {
+                    counter += 1;
+                    continue;
+                }
+                if (line.Substring(0, 1) == "#")
+                {
+                    if (line.Substring(0, 3) == "#BP")
+                    {
+                        renda_大.Add(line);
+                        renda_小.Add(line);
+                    }
                     counter += 1;
                     continue;
                 }
@@ -873,35 +912,164 @@ namespace Taiko
                 {
                     rendaflag_小 = true;
                 }
-                if(line.Contains("6"))
+                if (line.Contains("6"))
                 {
                     rendaflag_大 = true;
                 }
                 //風船や連打片っぽを防ぐことが出来る
                 if (!rendaflag_小 && !rendaflag_大)
                 {
-                   counter += 1;
-                   continue;
+                    counter += 1;
+                    continue;
                 }
                 //連打の途中譜面
-                if(rendaflag_大)
+                if (rendaflag_大)
                 {
                     renda_大.Add(line);
                 }
-                else if(rendaflag_小)
+                else if (rendaflag_小)
                 {
                     renda_小.Add(line);
                 }
 
-                if(line.Contains("8"))
+                if (line.Contains("8"))
                 {
                     rendaflag_大 = false;
                     rendaflag_小 = false;
                 }
                 counter += 1;
             }
-            
-            return total;
+
+            //全体を最後に作成するやつ
+            List<string>[] renda = new List<string>[2];
+            renda[0] = renda_小;
+            renda[1] = renda_大;
+            return renda;
+        }
+
+        private int[] 拍数の取得(string str)
+        {
+            int[] hakusuu = new int[2];
+            //最初は共通なので全然平気
+            string line = str;
+
+            //#MEASURE を削除
+            line = line.Substring(line.Length - 3, 3);
+            //分子
+            hakusuu[0] = int.Parse(line.Substring(0, 1));
+            //分母
+            hakusuu[1] = int.Parse(line.Substring(2, 1));
+
+            return hakusuu;
+        }
+
+        private float 小節ごとの最大演奏時間の取得(List<string> list,float nowbpm,int[] hakusuu)
+        {
+            //小節の最大演奏時間
+            float byousuu;
+            //60*拍子/テンポ
+
+            //演奏時間の計算
+            if (nowbpm == 0.0f)
+            {
+                byousuu = 0.0f;
+            }
+            else
+            {
+                byousuu = 60 * hakusuu[0]/ nowbpm;
+            }
+            return byousuu;
+        }
+
+        private int 連打数を自動計算をする(List<string>list)
+        {
+            const int 拍数ID = 1;
+
+            int counter = 0;
+            float renda_time = 0;
+            int renda_total = 0;
+
+            //初期BPMを取得する
+            string nowbpmstr = this.BPMのデータ取得(list);
+            float nowbpm = float.Parse(nowbpmstr);
+            counter += 1;
+            //初期拍数を取得する
+            int[] hakusuu = this.拍数の取得(list[拍数ID]);
+            counter += 1;
+
+            string line = null;
+            float ens演奏時間;
+
+            bool flag_連打 = false;
+
+            while(counter < list.Count)
+            {
+                line = list[counter];
+                if(line.Substring(0,1) == "#")
+                {
+                    if(line.Substring(0,2) == "#M")
+                    {
+                        hakusuu = this.拍数の取得(line);
+                    }
+                    else if(line.Substring(0,2) == "#B")
+                    {
+                        nowbpmstr = line;
+                        nowbpmstr = nowbpmstr.Substring(4, nowbpmstr.Length - 4);
+                        nowbpm = float.Parse(nowbpmstr);
+                    }
+                    counter += 1;
+                    continue;
+                }
+                //現在の演奏時間Maxを調べる
+                ens演奏時間 = this.小節ごとの最大演奏時間の取得(list,nowbpm,hakusuu);
+               
+
+                string temp = null;
+
+
+                //,までカットする
+                for(int i = 0;  i < line.Length;++i)
+                {
+                    if(line.Substring(i,1) == ",")
+                    {
+                        break;
+                    }
+                    temp += line[i];
+                }
+                float rn = ens演奏時間 / temp.Length;
+
+                //連打譜面を確認する
+                for (int i = 0; i < temp.Length; ++i)
+                {
+                    if (flag_連打)
+                    {
+                        renda_time += rn;
+                    }
+                    if (temp.Substring(i, 1) == "8")
+                    {
+                        flag_連打 = false;
+                    }
+                    if (temp.Substring(i, 1) == "5" || temp.Substring(i, 1) == "6")
+                    {
+                        flag_連打 = true;
+                    }
+                }
+                counter += 1;
+            }
+            float speed = 0;
+
+            //連打数の確認
+            if(this.checkBoxオート連打.Checked)
+            {
+                speed = 0.0625f;
+            }
+            else
+            {
+                speed = (float)this.numericUpDown連打数.Value;
+            }
+            float total = renda_time / speed;
+            renda_total = (int)total;
+            return renda_total;
         }
         private void checkBox連打数_CheckedChanged(object sender, EventArgs e)
         {
@@ -913,6 +1081,11 @@ namespace Taiko
             {
                 this.label連打数.Text = "連打数";
             }
+        }
+
+        private void checkBoxオート連打_CheckedChanged(object sender, EventArgs e)
+        {
+            this.numericUpDown連打数.Value = (decimal)0.0625;
         }
     }
 }
